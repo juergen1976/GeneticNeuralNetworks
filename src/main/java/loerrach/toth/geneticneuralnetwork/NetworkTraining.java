@@ -1,6 +1,5 @@
 package loerrach.toth.geneticneuralnetwork;
 
-import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -18,8 +17,17 @@ import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import java.util.stream.IntStream;
 
+/**
+ * NetworkTraining will create a neural network with the configuration.
+ * Also it provides a train method to do the training.
+ */
 public class NetworkTraining {
 
+    /**
+     * Create a new network with the required configuration.
+     * @param netConf Network configuration
+     * @return a MultiLayerNetwork network
+     */
     public MultiLayerNetwork compileNetwork(Network netConf) {
 
         int nb_layers = (int) netConf.getConfig().get("nb_layers");
@@ -72,6 +80,13 @@ public class NetworkTraining {
         return model;
     }
 
+    /**
+     * Train the network. A new network is created and trained.
+     * @param netConfig The network configuration
+     * @param mnistTrain The MNIST training set
+     * @param mnistTest The MNIST test set
+     * @return a score wth the accuracy between 0.0 and 1.0
+     */
     public double train_and_score(Network netConfig, DataSetIterator mnistTrain, DataSetIterator mnistTest) {
         MultiLayerNetwork networkModel = this.compileNetwork(netConfig);
         int numEpochs = 15; // number of epochs to perform

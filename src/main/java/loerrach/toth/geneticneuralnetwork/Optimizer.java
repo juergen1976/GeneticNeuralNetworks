@@ -1,10 +1,11 @@
 package loerrach.toth.geneticneuralnetwork;
 
-import sun.nio.ch.Net;
-
 import java.util.*;
 import java.util.stream.IntStream;
 
+/**
+ * Optimizer class with genetic algorithms to evolve neural networks
+ */
 public class Optimizer {
 
     private Hashtable nn_param_choices;
@@ -12,6 +13,14 @@ public class Optimizer {
     private double random_select;
     private double mutate_chance;
 
+    /**
+     * Constructor
+     * @param nn_param_choices Possible configurations for a network, see example is EvolutionExecutor
+     * @param retain percent between 0.0 and 1.0, how much in a population should be kept for the next generation
+     * @param random_select number between 0.0 and 1.0. used to random keep some low performer networks,
+     *                      higher number will increase the possibility
+     * @param mutate_chance number between 0.0 and 1.0. used for doing mutation. higher number will increase the possibility
+     */
     public Optimizer(Hashtable nn_param_choices, double retain, double random_select, double mutate_chance) {
         this.nn_param_choices = nn_param_choices;
         this.retain = retain;
@@ -19,6 +28,11 @@ public class Optimizer {
         this.mutate_chance = mutate_chance;
     }
 
+    /**
+     * Create a new population of networks
+     * @param count number of populations
+     * @return
+     */
     public List<Network> createPopulation(int count) {
         List<Network> result = new ArrayList<>();
 
@@ -30,19 +44,24 @@ public class Optimizer {
         return result;
     }
 
+    /**
+     * Get fitness score, which is the accuracy of the network between 0.0 and 1.0
+     * @param network Network instance to evaluate
+     * @return fitness between 0.0 and 1.0
+     */
     public static double fitness(Network network) {
         return network.getAccuracy();
     }
 
     /**
-     *
-     * @param population
-     * @return
+     * Grade a whole population. The fitness function
+     * @param population a list of networks
+     * @return grade between 0.0 and 1.0
      */
     public double grade(ArrayList<Network> population) {
         double result = 0;
-        for (Network aPopulation : population) {
-            result = result + aPopulation.getAccuracy();
+        for (Network network : population) {
+            result = result + Optimizer.fitness(network);
         }
 
         return result/population.size();
@@ -50,9 +69,9 @@ public class Optimizer {
 
     /**
      * Make two children as parts of their parents.
-     * @param father
-     * @param mother
-     * @return
+     * @param father the father Network
+     * @param mother the mother Network
+     * @return Two new children of network
      */
     public List<Network> breed(Network father, Network mother) {
         List<Network> twoChildren = new ArrayList<>();
@@ -73,7 +92,10 @@ public class Optimizer {
         return twoChildren;
     }
 
-
+    /**
+     * Mutate a desired network. Mutate either the number of neuron, number of layers, the activation function or the optimizer
+     * @param network a network which should be randomly mutated
+     */
     public void mutate(Network network) {
         List<String> keys = Arrays.asList("nb_neurons", "nb_layers", "activation", "optimizer");
         String randomHyperParameterKey = keys.get(new Random().nextInt(keys.size()));
@@ -81,6 +103,11 @@ public class Optimizer {
         network.getConfig().put(randomHyperParameterKey, hyperParameterValues.get(new Random().nextInt(hyperParameterValues.size())));
     }
 
+    /**
+     * Evolve a population for the next generation.  This will include scoring, selection, mutation, breeding
+     * @param population a list of networks which will form one population
+     * @return the next generation of the population gone trough the genetic algorithm
+     */
     public List<Network> evolve(List<Network> population) {
         List<Network> strongestNetworks = orderStrongestNetworks(population);
 
@@ -118,6 +145,11 @@ public class Optimizer {
         return survivors;
     }
 
+    /**
+     * Order the network top-down according to the fitness of each network
+     * @param networks Networks for sorting
+     * @return sorted networks according to the fitness of each network
+     */
     public List<Network> orderStrongestNetworks(List<Network> networks) {
         // Create a TreeMap which sorts the entries according to network accuracy top-down
         TreeMap<Double, Network> gradedNetworks = new TreeMap(Collections.reverseOrder());

@@ -9,10 +9,17 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.stream.IntStream;
 
+/**
+ * Create and do the evolution of a genetic neural network
+ */
 public class EvolutionExecuter {
 
+    /**
+     * Main method
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         int generations = 2;
         int population = 20;
@@ -27,6 +34,13 @@ public class EvolutionExecuter {
         executor.generate(generations, population, nn_param_choices);
     }
 
+    /**
+     * Generate new networks
+     * @param generationCount amount of generations to do
+     * @param populationCount amount of members in one population
+     * @param nn_param_choices Configuration of the network. See example in main method
+     * @throws IOException
+     */
     public void generate(int generationCount, int populationCount, Hashtable nn_param_choices) throws IOException {
         int rngSeed = 123; // random number seed for reproducibility
         int batchSize = 64; // batch size for each epoch
@@ -50,9 +64,11 @@ public class EvolutionExecuter {
 
         // Sort the final population
         population = networkOptimizer.orderStrongestNetworks(population);
+        // Do further processing of population
+        // ...
     }
 
-    public void trainNetworkPopulation(List<Network> population, DataSetIterator mnistTrain, DataSetIterator mnistTest) {
+    private void trainNetworkPopulation(List<Network> population, DataSetIterator mnistTrain, DataSetIterator mnistTest) {
         for (Network network : population) {
             network.train(mnistTrain, mnistTest);
         }
