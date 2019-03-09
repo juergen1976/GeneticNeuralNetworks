@@ -56,12 +56,14 @@ public class NetworkTraining {
 
         // Add layers between
         if (nb_layers > 1) {
-             builder.layer(0, new DenseLayer.Builder() //create the first, input layer with xavier initialization
+            for (int layer_id = 1; layer_id < nb_layers; layer_id++) {
+                builder.layer(0, new DenseLayer.Builder() //create the hidden layers
                 .nIn(nb_neurons)
                 .nOut(nb_neurons)
                 .activation(activation)
                 .weightInit(WeightInit.XAVIER)
                 .build());
+            }
         }
 
         // Output Layer
