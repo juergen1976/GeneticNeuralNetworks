@@ -31,6 +31,9 @@ public class NetworkTraining {
     public MultiLayerNetwork compileNetwork(Network netConf) {
 
         int nb_layers = (int) netConf.getConfig().get("nb_layers");
+        if (nb_layers < 2) {
+            nb_layers = 2;
+        }
         int nb_neurons = (int) netConf.getConfig().get("nb_neurons");
         Activation activation = (Activation) netConf.getConfig().get("activation");
         OptimizationAlgorithm optimizer = (OptimizationAlgorithm) netConf.getConfig().get("optimizer");
@@ -54,9 +57,9 @@ public class NetworkTraining {
                 .weightInit(WeightInit.XAVIER)
                 .build());
 
-        // Add layers between
-        if (nb_layers > 1) {
-            for (int layer_id = 1; layer_id < nb_layers; layer_id++) {
+        // Add layers between input layer and output layer
+        if (nb_layers > 2) {
+            for (int layer_id = 1; layer_id < nb_layers-1; layer_id++) {
                 builder.layer(0, new DenseLayer.Builder() //create the hidden layers
                 .nIn(nb_neurons)
                 .nOut(nb_neurons)
@@ -67,7 +70,7 @@ public class NetworkTraining {
         }
 
         // Output Layer
-        builder.layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD) //create hidden layer
+        builder.layer(nb_layers-1, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD) //create hidden layer
                 .nIn(nb_neurons)
                 .nOut(outputNum)
                 .activation(Activation.SOFTMAX)
