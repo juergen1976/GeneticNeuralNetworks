@@ -60,7 +60,7 @@ public class NetworkTraining {
         // Add layers between input layer and output layer
         if (nb_layers > 2) {
             for (int layer_id = 1; layer_id < nb_layers-1; layer_id++) {
-                builder.layer(0, new DenseLayer.Builder() //create the hidden layers
+                builder.layer(layer_id, new DenseLayer.Builder() //create the hidden layers
                 .nIn(nb_neurons)
                 .nOut(nb_neurons)
                 .activation(activation)
